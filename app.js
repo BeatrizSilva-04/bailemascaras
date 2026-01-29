@@ -48,6 +48,21 @@ function listenToData() {
         const data = snapshot.val();
         state.voters = data ? Object.values(data) : [];
     });
+
+    // Escutar Reset Global
+    db.ref('lastReset').on('value', (snapshot) => {
+        const resetTime = snapshot.val();
+        if (resetTime) {
+            const myVoteTime = localStorage.getItem('gala_vote_timestamp');
+            // Se houve um reset depois do meu último voto, liberta o telemóvel
+            if (!myVoteTime || parseInt(myVoteTime) < resetTime) {
+                localStorage.removeItem('gala_voted_device');
+                localStorage.removeItem('gala_vote_timestamp');
+                // Se estivermos na secção de voto, re-renderizar para mostrar o formulário
+                checkDeviceVoteStatus();
+            }
+        }
+    });
 }
 
 function initializeDatabase() {
@@ -107,6 +122,12 @@ function setupEventListeners() {
 
     // Reset Database
     document.getElementById('reset-db-btn').addEventListener('click', handleResetDatabase);
+
+    // QR Code Modal
+    document.getElementById('show-qr-btn').addEventListener('click', showQRCode);
+    document.getElementById('close-qr-btn').addEventListener('click', () => {
+        document.getElementById('qr-modal').style.display = 'none';
+    });
 
     // Jury Login
     document.getElementById('login-btn').addEventListener('click', handleLogin);
@@ -252,8 +273,10 @@ function handleVoteSubmission() {
     voterIdInput.value = '';
     targetIdInput.value = '';
 
-    // Tranca o dispositivo
+    // Tranca o dispositivo com timestamp
+    const now = Date.now();
     localStorage.setItem('gala_voted_device', 'true');
+    localStorage.setItem('gala_vote_timestamp', now.toString());
     checkDeviceVoteStatus();
 
     showToast(`Voto de #${voterId} registado para ${mask.name}!`);
@@ -452,11 +475,33 @@ function handleResetDatabase() {
         });
     });
 
-    // 3. Limpar tranca local deste dispositivo (caso o admin queira votar de novo)
-    localStorage.removeItem('gala_voted_device');
-    location.reload(); // Recarregar para mostrar o formulário de novo
+    // 3. Notificar todos os telemóveis do Reset Global
+    db.ref('lastReset').set(Date.now());
 
-    showToast("Base de dados limpa com sucesso! 🧹");
+    showToast("Base de dados e telemóveis limpos! 🧹");
+}
+
+let qrObject = null;
+function showQRCode() {
+    const container = document.getElementById('qrcode-container');
+    const modal = document.getElementById('qr-modal');
+
+    // Obter o URL atual automaticamente (funciona no GitHub ou localmente)
+    const currentUrl = window.location.href;
+
+    if (!qrObject) {
+        container.innerHTML = '';
+        qrObject = new QRCode(container, {
+            text: currentUrl,
+            width: 200,
+            height: 200,
+            colorDark: "#000000",
+            colorLight: "#ffffff",
+            correctLevel: QRCode.CorrectLevel.H
+        });
+    }
+
+    modal.style.display = 'flex';
 }
 
 function updateAdminStats() {
