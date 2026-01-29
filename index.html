@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="pt">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grande Concurso de Máscaras 2026</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="background-overlay"></div>
+
+    <header>
+        <div class="container">
+            <h1 class="logo-text">Gala das Máscaras</h1>
+            <nav>
+                <button class="nav-btn active" data-target="voting-section">Público</button>
+                <button class="nav-btn" data-target="jury-section">Júri</button>
+                <button class="nav-btn" data-target="results-section">Resultados</button>
+                <button class="nav-btn" data-target="admin-section">Administrador</button>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container">
+        <!-- Public Voting Section -->
+        <section id="voting-section" class="content-section active">
+            <div class="section-header">
+                <h2>Vote na sua Favorita</h2>
+                <p>Identifique-se com o seu número de participante e escolha a máscara que capturou o seu coração!</p>
+            </div>
+
+            <div class="glass-card vote-entry-card">
+                <div class="vote-inputs">
+                    <div class="input-group">
+                        <label for="voter-id">O Seu Número:</label>
+                        <input type="number" id="voter-id" placeholder="Ex: 5" min="1">
+                    </div>
+                    <div class="input-group">
+                        <label for="target-mask-id">Número da Máscara (Voto):</label>
+                        <input type="number" id="target-mask-id" placeholder="Ex: 2" min="1">
+                    </div>
+                    <button id="submit-vote-btn" class="primary-btn">Confirmar Voto</button>
+                </div>
+                <p id="vote-error" class="error-text" style="display:none;"></p>
+            </div>
+
+            <div id="masks-grid" class="grid">
+                <!-- Cards will be injected here -->
+            </div>
+        </section>
+
+        <!-- Jury Section -->
+        <section id="jury-section" class="content-section">
+            <div id="jury-login" class="glass-card login-card">
+                <h2>Acesso Restrito ao Júri</h2>
+                <p>Introduza a palavra-passe para iniciar a classificação.</p>
+                <div class="input-group">
+                    <input type="password" id="jury-password" placeholder="Palavra-passe">
+                    <button id="login-btn" class="primary-btn">Entrar</button>
+                </div>
+                <p id="login-error" class="error-text" style="display:none;">Palavra-passe incorreta.</p>
+            </div>
+
+            <div id="jury-panel" style="display:none;">
+                <div class="section-header">
+                    <h2>Classificação Técnica</h2>
+                    <p>Atribua uma nota de 0 a 10 a cada participante.</p>
+                    <button id="logout-btn" class="secondary-btn">Sair</button>
+                </div>
+                <div id="jury-grid" class="grid">
+                    <!-- Jury rating cards will be injected here -->
+                </div>
+            </div>
+        </section>
+
+        <!-- Results Section -->
+        <section id="results-section" class="content-section">
+            <div class="section-header">
+                <h2>Resultados em Tempo Real</h2>
+                <p>Confira quem está a liderar o baile.</p>
+            </div>
+            <div id="leaderboard" class="results-container">
+                <!-- Results will be injected here -->
+            </div>
+        </section>
+
+        <!-- Admin Section -->
+        <section id="admin-section" class="content-section">
+            <div id="admin-login" class="glass-card login-card">
+                <h2>Acesso Administrador</h2>
+                <p>Controlo total da Gala.</p>
+                <div class="input-group">
+                    <input type="password" id="admin-password" placeholder="Palavra-passe Admin">
+                    <button id="admin-login-btn" class="primary-btn">Entrar</button>
+                </div>
+                <p id="admin-login-error" class="error-text" style="display:none;">Palavra-passe incorreta.</p>
+            </div>
+
+            <div id="admin-panel" style="display:none;">
+                <div class="section-header">
+                    <h2>Gestão de Participantes</h2>
+                    <p>Adicione ou edite as máscaras concorrentes.</p>
+                    <div class="admin-top-actions">
+                        <button id="reset-db-btn" class="secondary-btn"
+                            style="color: #ff4d4d; border-color: #ff4d4d;">Limpar Todos os Dados (RESET)</button>
+                        <button id="admin-logout-btn" class="secondary-btn">Sair</button>
+                    </div>
+                </div>
+
+                <div class="glass-card admin-form-card">
+                    <h3>Adicionar Nova Máscara</h3>
+                    <div class="admin-grid-inputs">
+                        <div class="input-group">
+                            <label>Número/ID:</label>
+                            <input type="number" id="new-mask-id" placeholder="Ex: 5">
+                        </div>
+                        <div class="input-group">
+                            <label>Nome da Máscara:</label>
+                            <input type="text" id="new-mask-name" placeholder="Ex: Ouro Veneziano">
+                        </div>
+                        <div class="input-group">
+                            <label>Descrição:</label>
+                            <input type="text" id="new-mask-desc" placeholder="Breve descrição...">
+                        </div>
+                        <div class="input-group">
+                            <label>URL da Imagem:</label>
+                            <input type="text" id="new-mask-img" placeholder="URL ou nome do ficheiro">
+                        </div>
+                    </div>
+                    <button id="add-mask-btn" class="primary-btn">Adicionar Máscara</button>
+                </div>
+
+                <div id="admin-masks-list" class="admin-list">
+                    <!-- List of masks to manage -->
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2026 Grande Gala de Máscaras. Todos os direitos reservados.</p>
+    </footer>
+
+    <!-- Notification system -->
+    <div id="notification-area"></div>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+
+    <script src="app.js"></script>
+</body>
+
+</html>
