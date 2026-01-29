@@ -35,6 +35,7 @@ function listenToData() {
     db.ref('masks').on('value', (snapshot) => {
         const data = snapshot.val();
         state.masks = data ? Object.values(data) : [];
+        updateAdminStats();
         renderVotingGrid();
         renderResults();
         if (state.isJuryLoggedIn) renderJuryPanel();
@@ -345,6 +346,7 @@ function handleAdminLogin() {
 }
 
 function renderAdminPanel() {
+    updateAdminStats();
     const list = document.getElementById('admin-masks-list');
     list.innerHTML = '<h3>Máscaras Atuais</h3>';
 
@@ -432,6 +434,17 @@ function handleResetDatabase() {
     });
 
     showToast("Base de dados limpa com sucesso! 🧹");
+}
+
+function updateAdminStats() {
+    const totalMasks = state.masks.length;
+    const totalVotes = state.masks.reduce((sum, m) => sum + (m.votes || 0), 0);
+
+    const masksEl = document.getElementById('total-masks-count');
+    const votesEl = document.getElementById('total-votes-count');
+
+    if (masksEl) masksEl.innerText = totalMasks;
+    if (votesEl) votesEl.innerText = totalVotes;
 }
 
 // Resultados
