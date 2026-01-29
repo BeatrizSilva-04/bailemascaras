@@ -128,16 +128,35 @@ function handleFileSelect(e) {
     const file = e.target.files[0];
     if (!file) return;
 
-    // Verificar tamanho (limitar a 1MB para não sobrecarregar a base de dados)
-    if (file.size > 1024 * 1024) {
-        alert("A imagem é demasiado grande! Por favor escolha uma foto com menos de 1MB.");
-        e.target.value = '';
-        return;
-    }
+    showToast("A processar fotografia...");
 
     const reader = new FileReader();
     reader.onload = function (event) {
-        document.getElementById('new-mask-img-data').value = event.target.result;
+        const img = new Image();
+        img.onload = function () {
+            // Criar um canvas para redimensionar a imagem mantendo a qualidade
+            // A largura máxima de 1200px é excelente para web e garante que o Firebase não bloqueie
+            const canvas = document.createElement('canvas');
+            let width = img.width;
+            let height = img.height;
+
+            const MAX_WIDTH = 1200;
+            if (width > MAX_WIDTH) {
+                height = (MAX_WIDTH / width) * height;
+                width = MAX_WIDTH;
+            }
+
+            canvas.width = width;
+            canvas.height = height;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0, width, height);
+
+            // Converter para JPEG com 0.7 de qualidade (perfeito para ecrãs e tamanho reduzido)
+            const dataUrl = canvas.toDataURL('image/jpeg', 0.7);
+            document.getElementById('new-mask-img-data').value = dataUrl;
+            showToast("Fotografia pronta! ✨");
+        };
+        img.src = event.target.result;
     };
     reader.readAsDataURL(file);
 }
