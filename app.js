@@ -128,51 +128,51 @@ function handleFileSelect(e) {
     const file = e.target.files[0];
     if (!file) return;
 
-    showToast("A processar fotografia...");
+    const addBtn = document.getElementById('add-mask-btn');
+    addBtn.disabled = true;
+    addBtn.innerText = "A processar foto...";
+    showToast("A carregar fotografia...");
 
-    const reader = new FileReader();
-    reader.onload = function (event) {
-        const img = new Image();
-        img.onload = function () {
-            // Criar um canvas para redimensionar a imagem mantendo a qualidade
-            // A largura máxima de 1200px é excelente para web e garante que o Firebase não bloqueie
-            const canvas = document.createElement('canvas');
-            let width = img.width;
-            let height = img.height;
+    const img = new Image();
+    img.onload = function () {
+        const canvas = document.createElement('canvas');
+        let width = img.width;
+        let height = img.height;
 
-            const MAX_WIDTH = 1200;
-            if (width > MAX_WIDTH) {
-                height = (MAX_WIDTH / width) * height;
-                width = MAX_WIDTH;
-            }
+        // Redimensionar para um tamanho mais "seguro" para telemóveis
+        const MAX_WIDTH = 800;
+        if (width > MAX_WIDTH) {
+            height = (MAX_WIDTH / width) * height;
+            width = MAX_WIDTH;
+        }
 
-            canvas.width = width;
-            canvas.height = height;
-            const ctx = canvas.getContext('2d');
-            ctx.drawImage(img, 0, 0, width, height);
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, width, height);
 
-            // Converter para JPEG
-            const dataUrl = canvas.toDataURL('image/jpeg', 0.6);
-            document.getElementById('new-mask-img-data').value = dataUrl;
+        const dataUrl = canvas.toDataURL('image/jpeg', 0.5);
+        document.getElementById('new-mask-img-data').value = dataUrl;
 
-            // Mostrar antevisão
-            const previewImg = document.getElementById('admin-photo-preview');
-            const previewContainer = document.getElementById('image-preview-container');
-            previewImg.src = dataUrl;
-            previewContainer.style.display = 'block';
+        const previewImg = document.getElementById('admin-photo-preview');
+        const previewContainer = document.getElementById('image-preview-container');
+        previewImg.src = dataUrl;
+        previewContainer.style.display = 'block';
 
-            showToast("Fotografia capturada! ✨");
-        };
-        img.onerror = function () {
-            alert("Erro ao carregar a imagem. Tente tirar outra foto.");
-            showToast("Erro na imagem ❌");
-        };
-        img.src = event.target.result;
+        addBtn.disabled = false;
+        addBtn.innerText = "Adicionar Máscara ao Concurso";
+        showToast("Pronto! Já pode adicionar. ✅");
+
+        // Limpar memória
+        URL.revokeObjectURL(img.src);
     };
-    reader.onerror = function () {
-        alert("Erro na leitura do ficheiro.");
+    img.onerror = function () {
+        alert("Erro ao ler a foto. Tente novamente.");
+        addBtn.disabled = false;
+        addBtn.innerText = "Adicionar Máscara ao Concurso";
     };
-    reader.readAsDataURL(file);
+
+    img.src = URL.createObjectURL(file);
 }
 
 function showSection(id) {
