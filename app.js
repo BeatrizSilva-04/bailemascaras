@@ -437,3 +437,4 @@ function showToast(msg) {
 
 // Iniciar App
 window.addEventListener('DOMContentLoaded', init);
+
