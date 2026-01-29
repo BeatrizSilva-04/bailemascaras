@@ -132,7 +132,13 @@
                         <div class="input-group">
                             <label>Fotografia:</label>
                             <div class="file-input-wrapper">
-                                <input type="file" id="new-mask-file" accept="image/*" capture="environment">
+                                <input type="file" id="new-mask-file" accept="image/*">
+                            </div>
+                            <div id="image-preview-container"
+                                style="display:none; margin-top: 1rem; text-align: center;">
+                                <img id="admin-photo-preview" src=""
+                                    style="width: 100px; height: 100px; border-radius: 8px; object-fit: cover; border: 2px solid var(--gold);">
+                                <p style="font-size: 0.7rem; color: var(--gold);">Foto capturada! ✅</p>
                             </div>
                             <input type="hidden" id="new-mask-img-data">
                         </div>

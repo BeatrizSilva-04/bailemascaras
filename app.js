@@ -151,12 +151,26 @@ function handleFileSelect(e) {
             const ctx = canvas.getContext('2d');
             ctx.drawImage(img, 0, 0, width, height);
 
-            // Converter para JPEG com 0.7 de qualidade (perfeito para ecrãs e tamanho reduzido)
-            const dataUrl = canvas.toDataURL('image/jpeg', 0.7);
+            // Converter para JPEG
+            const dataUrl = canvas.toDataURL('image/jpeg', 0.6);
             document.getElementById('new-mask-img-data').value = dataUrl;
-            showToast("Fotografia pronta! ✨");
+
+            // Mostrar antevisão
+            const previewImg = document.getElementById('admin-photo-preview');
+            const previewContainer = document.getElementById('image-preview-container');
+            previewImg.src = dataUrl;
+            previewContainer.style.display = 'block';
+
+            showToast("Fotografia capturada! ✨");
+        };
+        img.onerror = function () {
+            alert("Erro ao carregar a imagem. Tente tirar outra foto.");
+            showToast("Erro na imagem ❌");
         };
         img.src = event.target.result;
+    };
+    reader.onerror = function () {
+        alert("Erro na leitura do ficheiro.");
     };
     reader.readAsDataURL(file);
 }
@@ -396,6 +410,7 @@ function handleAddMask() {
     document.getElementById('new-mask-desc').value = '';
     document.getElementById('new-mask-file').value = '';
     document.getElementById('new-mask-img-data').value = '';
+    document.getElementById('image-preview-container').style.display = 'none';
 
     showToast("Máscara adicionada com sucesso! ✨");
 }
