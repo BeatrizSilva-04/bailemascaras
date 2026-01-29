@@ -115,7 +115,7 @@
                 </div>
 
                 <div class="glass-card admin-form-card">
-                    <h3>Adicionar Nova Máscara</h3>
+                    <h3>Nova Máscara</h3>
                     <div class="admin-grid-inputs">
                         <div class="input-group">
                             <label>Número/ID:</label>
@@ -123,18 +123,21 @@
                         </div>
                         <div class="input-group">
                             <label>Nome da Máscara:</label>
-                            <input type="text" id="new-mask-name" placeholder="Ex: Ouro Veneziano">
+                            <input type="text" id="new-mask-name" placeholder="Ex: Gala de Ouro">
                         </div>
                         <div class="input-group">
                             <label>Descrição:</label>
-                            <input type="text" id="new-mask-desc" placeholder="Breve descrição...">
+                            <input type="text" id="new-mask-desc" placeholder="Ex: Penas e Ouro">
                         </div>
                         <div class="input-group">
-                            <label>URL da Imagem:</label>
-                            <input type="text" id="new-mask-img" placeholder="URL ou nome do ficheiro">
+                            <label>Fotografia:</label>
+                            <div class="file-input-wrapper">
+                                <input type="file" id="new-mask-file" accept="image/*">
+                            </div>
+                            <input type="hidden" id="new-mask-img-data">
                         </div>
                     </div>
-                    <button id="add-mask-btn" class="primary-btn">Adicionar Máscara</button>
+                    <button id="add-mask-btn" class="primary-btn">Adicionar Máscara ao Concurso</button>
                 </div>
 
                 <div id="admin-masks-list" class="admin-list">

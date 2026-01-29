@@ -34,16 +34,11 @@ function listenToData() {
     // Escutar Máscaras
     db.ref('masks').on('value', (snapshot) => {
         const data = snapshot.val();
-        if (data) {
-            state.masks = Object.values(data);
-            renderVotingGrid();
-            renderResults();
-            if (state.isJuryLoggedIn) renderJuryPanel();
-            if (state.isAdminLoggedIn) renderAdminPanel();
-        } else {
-            // Se a BD estiver vazia, inicializar com as padrão
-            initializeDatabase();
-        }
+        state.masks = data ? Object.values(data) : [];
+        renderVotingGrid();
+        renderResults();
+        if (state.isJuryLoggedIn) renderJuryPanel();
+        if (state.isAdminLoggedIn) renderAdminPanel();
     });
 
     // Escutar Votantes
@@ -105,6 +100,9 @@ function setupEventListeners() {
     // Add Mask
     document.getElementById('add-mask-btn').addEventListener('click', handleAddMask);
 
+    // File Upload Preview
+    document.getElementById('new-mask-file').addEventListener('change', handleFileSelect);
+
     // Reset Database
     document.getElementById('reset-db-btn').addEventListener('click', handleResetDatabase);
 
@@ -124,6 +122,24 @@ function setupEventListeners() {
         document.getElementById('jury-login').style.display = 'block';
         document.getElementById('jury-password').value = '';
     });
+}
+
+function handleFileSelect(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    // Verificar tamanho (limitar a 1MB para não sobrecarregar a base de dados)
+    if (file.size > 1024 * 1024) {
+        alert("A imagem é demasiado grande! Por favor escolha uma foto com menos de 1MB.");
+        e.target.value = '';
+        return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = function (event) {
+        document.getElementById('new-mask-img-data').value = event.target.result;
+    };
+    reader.readAsDataURL(file);
 }
 
 function showSection(id) {
@@ -327,10 +343,15 @@ function handleAddMask() {
     const id = parseInt(document.getElementById('new-mask-id').value);
     const name = document.getElementById('new-mask-name').value;
     const desc = document.getElementById('new-mask-desc').value;
-    const img = document.getElementById('new-mask-img').value;
+    const imgData = document.getElementById('new-mask-img-data').value;
 
     if (!id || !name) {
         alert("O número e o nome são obrigatórios.");
+        return;
+    }
+
+    if (!imgData) {
+        alert("Por favor, tire ou selecione uma fotografia da máscara.");
         return;
     }
 
@@ -343,7 +364,7 @@ function handleAddMask() {
         id: id,
         name: name,
         description: desc || "Sem descrição",
-        image: img || "https://via.placeholder.com/400x400?text=Máscara",
+        image: imgData,
         votes: 0,
         juryScore: 0
     };
@@ -354,9 +375,10 @@ function handleAddMask() {
     document.getElementById('new-mask-id').value = '';
     document.getElementById('new-mask-name').value = '';
     document.getElementById('new-mask-desc').value = '';
-    document.getElementById('new-mask-img').value = '';
+    document.getElementById('new-mask-file').value = '';
+    document.getElementById('new-mask-img-data').value = '';
 
-    showToast("Nova máscara adicionada com sucesso!");
+    showToast("Máscara adicionada com sucesso! ✨");
 }
 
 function handleResetDatabase() {
