@@ -27,6 +27,7 @@ let state = {
 function init() {
     setupEventListeners();
     listenToData();
+    checkDeviceVoteStatus();
 }
 
 // Escuta a base de dados em TEMPO REAL para todos
@@ -251,7 +252,25 @@ function handleVoteSubmission() {
     voterIdInput.value = '';
     targetIdInput.value = '';
 
+    // Tranca o dispositivo
+    localStorage.setItem('gala_voted_device', 'true');
+    checkDeviceVoteStatus();
+
     showToast(`Voto de #${voterId} registado para ${mask.name}!`);
+}
+
+function checkDeviceVoteStatus() {
+    if (localStorage.getItem('gala_voted_device') === 'true') {
+        const entryCard = document.querySelector('.vote-entry-card');
+        if (entryCard) {
+            entryCard.innerHTML = `
+                <div style="text-align: center; padding: 1rem;">
+                    <h3 style="color: var(--gold); margin-bottom: 0.5rem;">✨ Voto Registado!</h3>
+                    <p style="font-size: 0.9rem; color: var(--text-dim);">Obrigado pela sua participação na Gala. O seu voto já foi contabilizado.</p>
+                </div>
+            `;
+        }
+    }
 }
 
 function showError(msg) {
@@ -432,6 +451,10 @@ function handleResetDatabase() {
             juryScore: 0
         });
     });
+
+    // 3. Limpar tranca local deste dispositivo (caso o admin queira votar de novo)
+    localStorage.removeItem('gala_voted_device');
+    location.reload(); // Recarregar para mostrar o formulário de novo
 
     showToast("Base de dados limpa com sucesso! 🧹");
 }
